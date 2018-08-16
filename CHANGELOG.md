@@ -5,6 +5,11 @@ after the 3.9.0 release. All changes up until the 3.9.0 release can be found in 
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 
+## [Unreleased] 
+
+### Fixed
+- #1455 - Fixed issue with validation on coral3 ui fields
+
 ## [3.17.4] - 2018-08-15
 
 - #1413 - Added ACL to make the redirect maps globally readable

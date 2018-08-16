@@ -110,7 +110,8 @@
                 actionUrl = $form.attr("action") + ".infinity.json",
                 mValues, $field, name, $multifield;
 
-            $(".js-coral-Multifield-add").click(function(){
+            cmf.IS_CONTENT_LOADED = false;
+            $(".js-coral-Multifield-add, button[coral-multifield-add]").click(function(){
                 $multifield = $(this).parent();
 
                 setTimeout(function(){

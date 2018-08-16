@@ -99,7 +99,7 @@
                 select.setValue(value);
             }
         },
-		
+
 		    isCoralSelect: function ($field) {
             return !_.isEmpty($field) && ($field.parent().prop('tagName') === "CORAL-SELECT");
         },
@@ -253,6 +253,7 @@
         },
 
         addCompositeMultifieldValidator: function(){
+
             var fieldErrorEl = $("<span class='coral-Form-fielderror coral-Icon coral-Icon--alert coral-Icon--sizeS' " +
                     "data-init='quicktip' data-quicktip-type='error' />"),
                 cmf = this,
@@ -276,6 +277,18 @@
                     isRequired = $input.attr("required") || ($input.attr("aria-required") === "true");
 
                     if (isRequired && $input.val().length === 0) {
+
+                        if (cmf.isCoralSelect($input) ) {
+                            $input.parent().addClass("is-invalid");
+                        }else {
+                        $input.addClass("is-invalid");
+                        }
+                        isValid = false;
+
+                    }else if (cmf.isCheckboxValid($input)) {
+                        $input.parent().addClass("is-invalid");
+                        isValid = false;
+                    }else if(cmf.isFoundationAutocompleteValid($input)) {
                         $input.addClass("is-invalid");
                         message = "Please fill the required multifield items";
                     }else{
