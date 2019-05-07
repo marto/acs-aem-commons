@@ -249,7 +249,8 @@
         addCompositeMultifieldRemoveListener: function($multifield){
             var cmf = this;
 
-            $multifield.find(".js-coral-Multifield-remove").click(function(){
+            $multifield.find(".js-coral-Multifield-remove, .coral-Multifield-remove").click(function(){
+                $multifield.nextAll(".coral-Form-fielderror").tooltip("hide").remove();
                 setTimeout(function () {
                     cmf.addCompositeMultifieldValidator();
                 }, 500);
@@ -300,10 +301,15 @@
                     }
                 });
 
-                if(message){
-                    $(".cq-dialog-submit").attr("disabled", "disabled");
-                }else{
-                    $(".cq-dialog-submit").removeAttr("disabled");
+                if(!isValid){
+                    message = "Please fill the required multifield items";
+                    $(".cq-dialog-submit, [type='submit']").attr("disabled", "disabled");
+                } else {
+                    $(".cq-dialog-submit, [type='submit']").removeAttr("disabled");
+                }
+
+                if (message) {
+                    show($el, message);
                 }
 
                 return message;
