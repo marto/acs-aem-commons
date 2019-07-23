@@ -5,6 +5,9 @@ after the 3.9.0 release. All changes up until the 3.9.0 release can be found in 
 
 The format is based on [Keep a Changelog](http://keepachangelog.com)
 
+## Unreleased
+- #1998 - Coral3 checkbox storing json value as string instead of boolean when using Json Store in multifields
+
 ## [3.19.2] - 2019-07-16
 
 - #1547 - Updated Report Runner's ReportCSVExportServlet to support extra-ACS Commons ReportCellCSVExporter
