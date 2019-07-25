@@ -5,9 +5,9 @@
     <!-- P A R E N T P R O J E C T D E S C R I P T I O N -->
     <!-- ====================================================================== -->
     <parent>
-        <groupId>com.adobe.acs</groupId>
+        <groupId>uk.caci.adobe.acs</groupId>
         <artifactId>acs-aem-commons</artifactId>
-        <version>3.17.4</version>
+        <version>3.17.4.1</version>
     </parent>
 
     <!-- ====================================================================== -->
@@ -78,7 +78,7 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.adobe.acs</groupId>
+            <groupId>uk.caci.adobe.acs</groupId>
             <artifactId>acs-aem-commons-bundle</artifactId>
             <version>${project.version}</version>
             <scope>provided</scope>
