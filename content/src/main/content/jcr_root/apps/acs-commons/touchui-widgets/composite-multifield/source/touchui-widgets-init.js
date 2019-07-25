@@ -114,7 +114,7 @@
         },
 
         setCheckBox: function ($field, value) {
-            if($field.parent().hasClass("coral-Checkbox")){
+            if($field.parent().hasClass("coral-Checkbox") || $field.parent().hasClass("coral3-Checkbox")) {
                 $field.parent().prop("checked", $field.attr("value") === value.toString());
             }else {
                 $field.prop("checked", $field.attr("value") === value.toString());
