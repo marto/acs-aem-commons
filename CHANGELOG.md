@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/)
 ## [Unreleased] 
 
 ### Fixed
+- #1998 - Coral3 checkbox storing json value as string instead of boolean when using Json Store in multifields
 - #1455 - Fixed issue with validation on coral3 ui fields
 
 ## [3.17.4] - 2018-08-15
