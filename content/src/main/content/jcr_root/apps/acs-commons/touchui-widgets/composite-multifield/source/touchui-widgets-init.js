@@ -42,6 +42,7 @@
         SELECTOR_FORM_SITES_PROPERTIES: "form#cq-sites-properties-form",
         SELECTOR_FORM_CREATE_PAGE: "form.cq-siteadmin-admin-createpage",
         SELECTOR_FORM_PROPERTIES_PAGE: "form#propertiesform",
+        IS_CONTENT_LOADED: false,
 
         nestedPluck: function(object, key) {
             if (!_.isObject(object) || _.isEmpty(object) || _.isEmpty(key)) {
@@ -246,6 +247,25 @@
             return (name === this.NODE_STORE);
         },
 
+        isFoundationAutocompleteValid: function($field) {
+            if(!this.isFoundationAutocomplete($field)) {
+                return false;
+            }
+            var foundationTag = $field.parents('foundation-autocomplete');
+            return (foundationTag.attr("required") && foundationTag.val().length === 0);
+        },
+
+        isCheckboxValid: function($field) {
+            if(!this.isCheckbox($field)) {
+                return false;
+            }
+            var checkboxTag = $field;
+            if($field.parent().hasClass("coral-Checkbox")){
+                checkboxTag = $field.parent();
+            }
+            return (checkboxTag.attr("required") && !checkboxTag.attr('checked'));
+        },
+
         addCompositeMultifieldRemoveListener: function($multifield){
             var cmf = this;
 
@@ -262,8 +282,7 @@
             var fieldErrorEl = $("<span class='coral-Form-fielderror coral-Icon coral-Icon--alert coral-Icon--sizeS' " +
                     "data-init='quicktip' data-quicktip-type='error' />"),
                 cmf = this,
-                selector = "[" + cmf.DATA_ACS_COMMONS_NESTED + "] >* input, [" + cmf.DATA_ACS_COMMONS_NESTED + "] >* textarea";
-
+                selector = "[" + cmf.DATA_ACS_COMMONS_NESTED + "] >* .coral-Form-field, [" + cmf.DATA_ACS_COMMONS_NESTED + "] >* .coral-Textfield";
             $.validator.register({
                 selector: selector,
                 validate: validate,
@@ -272,10 +291,14 @@
             });
 
             function validate($el){
+                if(!cmf.IS_CONTENT_LOADED){
+                    return null;
+                }
                 var $multifield = $el.closest(".coral-Multifield"),
-                    $inputs = $multifield.find("input, textarea"),
+                    $inputs = $multifield.find("input, textarea").not("[name*='@']"),
                     $input, isRequired, message = null;
 
+                var isValid = true;
                 $inputs.each(function(index, input){
                     $input = $(input);
 
@@ -295,9 +318,10 @@
                         isValid = false;
                     }else if(cmf.isFoundationAutocompleteValid($input)) {
                         $input.addClass("is-invalid");
-                        message = "Please fill the required multifield items";
+                        isValid = false;
                     }else{
                         $input.removeClass("is-invalid");
+                        $input.parent().removeClass("is-invalid");
                     }
                 });
 

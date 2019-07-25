@@ -210,9 +210,11 @@
                 });
 
                 $document.trigger("touchui-composite-multifield-ready", mNames);
-
-                cmf.addCompositeMultifieldValidator();
-                cmf.showHideFields();
+                setTimeout(function(){
+                    cmf.IS_CONTENT_LOADED = true;
+                    cmf.addCompositeMultifieldValidator();
+                    cmf.showHideFields();
+                }, 500);
             }
 
             $.ajax(actionUrl).done(postProcess);
