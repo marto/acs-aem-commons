@@ -5,9 +5,9 @@
     <!-- P A R E N T P R O J E C T D E S C R I P T I O N -->
     <!-- ====================================================================== -->
 
-    <groupId>com.adobe.acs</groupId>
+    <groupId>uk.caci.adobe.acs</groupId>
     <artifactId>acs-aem-commons</artifactId>
-    <version>3.18.2</version>
+    <version>3.18.2.1</version>
     <packaging>pom</packaging>
 
     <name>ACS AEM Commons - Reactor Project</name>

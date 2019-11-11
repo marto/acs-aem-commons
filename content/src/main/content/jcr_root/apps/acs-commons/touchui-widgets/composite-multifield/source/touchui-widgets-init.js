@@ -42,6 +42,7 @@
         SELECTOR_FORM_SITES_PROPERTIES: "form#cq-sites-properties-form",
         SELECTOR_FORM_CREATE_PAGE: "form.cq-siteadmin-admin-createpage",
         SELECTOR_FORM_PROPERTIES_PAGE: "form#propertiesform",
+        IS_CONTENT_LOADED: false,
 
         nestedPluck: function(object, key) {
             if (!_.isObject(object) || _.isEmpty(object) || _.isEmpty(key)) {
@@ -99,7 +100,7 @@
                 select.setValue(value);
             }
         },
-		
+
 		    isCoralSelect: function ($field) {
             return !_.isEmpty($field) && ($field.parent().prop('tagName') === "CORAL-SELECT");
         },
@@ -110,14 +111,14 @@
 
 		    // To support coral 3 UI checkbox, add property granite:class=coral-Form-fieldwrapper to the field in dialog.
         isCheckbox: function ($field) {
-            return !_.isEmpty($field) && ($field.prop("type") === "checkbox" || $field.hasClass("coral-Checkbox"));
+            return !_.isEmpty($field) && ($field.prop("type") === "checkbox" || $field.hasClass("coral-Checkbox") || $field.hasClass("coral3-Checkbox"));
         },
 
         setCheckBox: function ($field, value) {
-            if($field.parent().hasClass("coral-Checkbox")){
-                $field.parent().prop("checked", $field.attr("value") === value);
+            if($field.parent().hasClass("coral-Checkbox") || $field.parent().hasClass("coral3-Checkbox")) {
+                $field.parent().prop("checked", $field.attr("value") === value.toString());
             }else {
-            	$field.prop("checked", $field.attr("value") === value);
+                $field.prop("checked", $field.attr("value") === value.toString());
             }
         },
 
@@ -206,6 +207,10 @@
             }
         },
 
+        isCoralNumberField: function ($field) {
+            return !_.isEmpty($field) && $field.parent().hasClass("coral3-NumberInput");
+        },
+
         isColorField: function ($field) {
             return $field.attr("is") === "coral-textfield" && $field.hasClass("coral-ColorInput-input");
         },
@@ -271,10 +276,30 @@
             return (name === this.NODE_STORE);
         },
 
+        isFoundationAutocompleteValid: function($field) {
+            if(!this.isFoundationAutocomplete($field)) {
+                return false;
+            }
+            var foundationTag = $field.parents('foundation-autocomplete');
+            return (foundationTag.attr("required") && foundationTag.val().length === 0);
+        },
+
+        isCheckboxValid: function($field) {
+            if(!this.isCheckbox($field)) {
+                return false;
+            }
+            var checkboxTag = $field;
+            if($field.parent().hasClass("coral-Checkbox")){
+                checkboxTag = $field.parent();
+            }
+            return (checkboxTag.attr("required") && !checkboxTag.attr('checked'));
+        },
+
         addCompositeMultifieldRemoveListener: function($multifield){
             var cmf = this;
 
-            $multifield.find(".js-coral-Multifield-remove").click(function(){
+            $multifield.find(".js-coral-Multifield-remove, .coral-Multifield-remove").click(function(){
+                $multifield.nextAll(".coral-Form-fielderror").tooltip("hide").remove();
                 setTimeout(function () {
                     cmf.addCompositeMultifieldValidator();
                 }, 500);
@@ -282,11 +307,11 @@
         },
 
         addCompositeMultifieldValidator: function(){
+
             var fieldErrorEl = $("<span class='coral-Form-fielderror coral-Icon coral-Icon--alert coral-Icon--sizeS' " +
                     "data-init='quicktip' data-quicktip-type='error' />"),
                 cmf = this,
-                selector = "[" + cmf.DATA_ACS_COMMONS_NESTED + "] >* input, [" + cmf.DATA_ACS_COMMONS_NESTED + "] >* textarea";
-
+                selector = "[" + cmf.DATA_ACS_COMMONS_NESTED + "] >* .coral-Form-field, [" + cmf.DATA_ACS_COMMONS_NESTED + "] >* .coral-Textfield";
             $.validator.register({
                 selector: selector,
                 validate: validate,
@@ -295,27 +320,49 @@
             });
 
             function validate($el){
+                if(!cmf.IS_CONTENT_LOADED){
+                    return null;
+                }
                 var $multifield = $el.closest(".coral-Multifield"),
-                    $inputs = $multifield.find("input, textarea"),
+                    $inputs = $multifield.find("input, textarea").not("[name*='@']"),
                     $input, isRequired, message = null;
 
+                var isValid = true;
                 $inputs.each(function(index, input){
                     $input = $(input);
 
                     isRequired = $input.attr("required") || ($input.attr("aria-required") === "true");
 
                     if (isRequired && $input.val().length === 0) {
+
+                        if (cmf.isCoralSelect($input) || cmf.isCoralNumberField($input)) {
+                            $input.parent().addClass("is-invalid");
+                        }else {
                         $input.addClass("is-invalid");
-                        message = "Please fill the required multifield items";
+                        }
+                        isValid = false;
+
+                    }else if (cmf.isCheckboxValid($input)) {
+                        $input.parent().addClass("is-invalid");
+                        isValid = false;
+                    }else if(cmf.isFoundationAutocompleteValid($input)) {
+                        $input.addClass("is-invalid");
+                        isValid = false;
                     }else{
                         $input.removeClass("is-invalid");
+                        $input.parent().removeClass("is-invalid");
                     }
                 });
 
-                if(message){
-                    $(".cq-dialog-submit").attr("disabled", "disabled");
-                }else{
-                    $(".cq-dialog-submit").removeAttr("disabled");
+                if(!isValid){
+                    message = "Please fill the required multifield items";
+                    $(".cq-dialog-submit, [type='submit']").attr("disabled", "disabled");
+                } else {
+                    $(".cq-dialog-submit, [type='submit']").removeAttr("disabled");
+                }
+
+                if (message) {
+                    show($el, message);
                 }
 
                 return message;

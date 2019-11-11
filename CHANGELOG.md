@@ -5,6 +5,12 @@ after the 3.9.0 release. All changes up until the 3.9.0 release can be found in 
 
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 
+## [Unreleased]
+
+### Fixed
+- #1998 - Coral3 checkbox storing json value as string instead of boolean when using Json Store in multifields
+- #1455 - Fixed issue with validation on coral3 ui fields
+
 ## [3.18.2] - 2018-09-26
 
 ### Fixed

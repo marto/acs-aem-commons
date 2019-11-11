@@ -110,7 +110,8 @@
                 actionUrl = $form.attr("action") + ".infinity.json",
                 mValues, $field, name, $multifield;
 
-            $(".js-coral-Multifield-add").click(function(){
+            cmf.IS_CONTENT_LOADED = false;
+            $(".js-coral-Multifield-add, button[coral-multifield-add]").click(function(){
                 $multifield = $(this).parent();
 
                 setTimeout(function(){
@@ -121,6 +122,7 @@
             });
 
             if (_.isEmpty($fieldSets)) {
+                cmf.IS_CONTENT_LOADED = true;
                 return;
             }
 
@@ -208,12 +210,30 @@
                 });
 
                 $document.trigger("touchui-composite-multifield-ready", mNames);
-
-                cmf.addCompositeMultifieldValidator();
-                cmf.showHideFields();
+                setTimeout(function(){
+                    cmf.IS_CONTENT_LOADED = true;
+                    cmf.addCompositeMultifieldValidator();
+                    cmf.showHideFields();
+                }, 500);
             }
 
             $.ajax(actionUrl).done(postProcess);
+        },
+
+        checkboxPrimativeType: function (value){
+            if (typeof value != "string") {
+                return value;
+            }
+            switch(value){
+                case true:
+                case "true":
+                    return true;
+                case false:
+                case "false":
+                    return false;
+                default:
+                    return value;
+            }
         },
 
         fillValue: function ($field, record) {
@@ -231,7 +251,8 @@
             value = $field.val();
 
             if (this.isCheckbox($field)) {
-                value = $field.prop("checked") ? $field.val() : "";
+                var defaultVal = $field.parent().find("[name='./" + name + "@DefaultValue']").attr('value');
+                value = this.checkboxPrimativeType($field.prop("checked") ? $field.val() : (defaultVal ? defaultVal : ""));
             }
 
             if (this.isAutocomplete($field) || this.isTagsField($field)) {
